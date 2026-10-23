@@ -22,7 +22,7 @@
    @version $Revision$
 *)
 
-Require Import ZArith.
+From Stdlib Require Import ZArith.
 
 Require Import lemmas.
 Require Import natZ.
@@ -159,7 +159,7 @@ Proof.
    intros a n.
    case n.
    intro.
-   elim (lt_irrefl 0).
+   elim (Nat.lt_irrefl 0).
    assumption.
    intro.
    intro.
@@ -167,7 +167,7 @@ Proof.
    intro.
    case m.
    intro.
-   elim (lt_irrefl 0).
+   elim (Nat.lt_irrefl 0).
    assumption.
    intro m0.
    intros.
@@ -252,7 +252,7 @@ Proof.
    rewrite Zmult_comm.
    rewrite Zopp_mult_distr_l_reverse.
    rewrite <- Znat.inj_mult.
-   rewrite mult_comm.
+   rewrite Nat.mul_comm.
    rewrite <- H0.
    rewrite inj_abs_neg.
    rewrite Z.opp_involutive.
@@ -282,7 +282,7 @@ Proof.
    intro.
    absurd (Divides n 1).
    intro.
-   elim (le_not_lt n 1).
+   elim (proj1 (Nat.le_ngt n 1)).
    apply div_le1.
    assumption.
    assumption.
@@ -319,7 +319,7 @@ Proof.
    elim (moddivmin x 0 n).
    rewrite <- Zminus_0_l_reverse.
    intros.
-   elim (le_not_lt n (Z.abs_nat x)).
+   elim (proj1 (Nat.le_ngt n (Z.abs_nat x))).
    apply div_le.
    change (Z.abs_nat 0 < Z.abs_nat x) in |- *.
    apply ltzlt.
@@ -337,7 +337,7 @@ Proof.
    assumption.
    change (Z_of_nat 0 <= Z_of_nat n)%Z in |- *.
    apply Znat.inj_le.
-   apply le_O_n.
+   apply Nat.le_0_l.
    assumption.
 Qed.
 

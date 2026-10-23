@@ -23,8 +23,8 @@
    @version $Revision$
 *)
 
-Require Import ZArith.
-Require Import EqNat.
+From Stdlib Require Import ZArith.
+From Stdlib Require Import EqNat.
 
 Require Import lemmas.
 
@@ -187,7 +187,7 @@ Lemma lezle :
  (0 <= x)%Z -> (0 <= y)%Z -> (x <= y)%Z -> Z.abs_nat x <= Z.abs_nat y.
 Proof.
    intros.
-   elim (le_or_lt (Z.abs_nat x) (Z.abs_nat y)).
+   elim (Nat.le_gt_cases (Z.abs_nat x) (Z.abs_nat y)).
    intros. assumption.
    intros. elim (Zlt_not_le y x).
    rewrite <- (inj_abs_pos x).
@@ -203,7 +203,7 @@ Lemma gtzgt :
  (0 <= x)%Z -> (0 <= y)%Z -> (x > y)%Z -> Z.abs_nat x > Z.abs_nat y.
 Proof.
    intros.
-   elim (le_or_lt (Z.abs_nat x) (Z.abs_nat y)).
+   elim (Nat.le_gt_cases (Z.abs_nat x) (Z.abs_nat y)).
    intros.
    elim (Zle_not_lt x y).
    rewrite <- (inj_abs_pos x).
@@ -331,5 +331,5 @@ Proof.
    intros m IHm.
    change (Z_of_nat (S m) >= Z_of_nat 0)%Z in |- *.
    apply Znat.inj_ge. unfold ge in |- *.
-   apply le_O_n.
+   apply Nat.le_0_l.
 Qed.

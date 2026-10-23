@@ -22,9 +22,9 @@
    @version $Revision$
 *)
 
-Require Import Arith.
-Require Import ZArith.
-Require Import Wf_nat.
+From Stdlib Require Import Arith.
+From Stdlib Require Import ZArith.
+From Stdlib Require Import Wf_nat.
 
 Require Import lemmas.
 Require Import natZ.
@@ -56,13 +56,13 @@ Proof.
    elim H. intro d. intros.
    elim H0. intros.
    elim H2. intros.
-   intro. elim (le_not_lt q d).
+   intro. elim (proj1 (Nat.le_ngt q d)).
    apply H5.
    assumption.
    assumption.
    assumption.
    left. intros.
-   elim (le_or_lt q d).
+   elim (Nat.le_gt_cases q d).
    intro. assumption.
    intro.
    elim H.
@@ -105,7 +105,7 @@ Proof.
    split.
    assumption.
    intros.
-   elim (le_or_lt X d).
+   elim (Nat.le_gt_cases X d).
    intro. assumption.
    intros.
    elim H2.
@@ -129,21 +129,22 @@ Proof.
    intros.
    split with x.
    split.
-   apply le_lt_trans with (pred p).
+   apply Nat.le_lt_trans with (pred p).
    elim H3.
    intros.
    elim H5.
    intros.
    apply (H7 (pred p)).
-   apply lt_pred.
+   apply -> Nat.lt_succ_lt_pred.
    assumption.
    apply flt. assumption. assumption.
-   apply lt_pred_n_n.
-   apply lt_trans with 1. apply lt_O_Sn. assumption.
+   apply Nat.lt_pred_l.
+   apply <- Nat.neq_0_lt_0.
+   apply Nat.lt_trans with 1. apply Nat.lt_0_succ. assumption.
    assumption.
    split with (pred p).
    split.
-   apply lt_pred.
+   apply -> Nat.lt_succ_lt_pred.
    assumption.
    apply flt. assumption. assumption.
 Qed.
@@ -160,7 +161,7 @@ Proof.
    intro q. intros. elim H7. intro r. intros.
    elim H8. intros. elim H10. intros.
    rewrite H12 in H1.
-   elim (lt_not_le r x).
+   elim (proj1 (Nat.lt_nge r x)).
    assumption.
    apply H5.
    assumption.
@@ -174,7 +175,7 @@ Proof.
    assumption.
    apply mod_refl.
    apply Zmult_1_l.
-   rewrite mult_comm.
+   rewrite Nat.mul_comm.
    rewrite exp_mult.
    apply mod_refl.
    rewrite <- exp_plus.
@@ -189,7 +190,7 @@ Proof.
    elim H0. intros.
    elim H4. intros.
    apply H6.
-   apply lt_pred. assumption.
+   apply -> Nat.lt_succ_lt_pred. assumption.
    apply flt.
    assumption.
    intro.
@@ -201,7 +202,7 @@ Proof.
    unfold gt in |- *.
    unfold gt in H1.
    unfold lt in |- *.
-   apply lt_le_weak.
+   apply Nat.lt_le_incl.
    assumption.
    assumption.
    assumption.

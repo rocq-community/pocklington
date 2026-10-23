@@ -22,8 +22,8 @@
    @version $Revision$
 *)
 
-Require Import ZArith.
-Require Import Wf_nat.
+From Stdlib Require Import ZArith.
+From Stdlib Require Import Wf_nat.
 
 Require Import lemmas.
 Require Import natZ.
@@ -61,7 +61,7 @@ Proof.
    unfold lt in |- *.
    apply le_n_S.
    apply div_le.
-   apply lt_trans with 1. apply lt_O_Sn. assumption.
+   apply Nat.lt_trans with 1. apply Nat.lt_0_succ. assumption.
    assumption.
    assumption.
 Qed.
@@ -97,8 +97,8 @@ Lemma nonprime_witness :
  n > 1 -> ~ Prime n -> exists d : nat, 1 < d /\ d < n /\ Divides d n.
 Proof.
    intro n. case n.
-   intro. elim (lt_n_O 1). assumption.
-   intro n1. case n1. intro. elim (lt_irrefl 1). assumption.
+   intro. elim (Nat.nlt_0_r 1). assumption.
+   intro n1. case n1. intro. elim (Nat.lt_irrefl 1). assumption.
    intro n2. intros.
    elim
     (decDeMorgan (S (S n2)) (fun d : nat => 1 < d /\ Divides d (S (S n2)))).
@@ -116,9 +116,9 @@ Proof.
    intro. unfold Divides in H4. elim H4. simpl in |- *. intros. discriminate H5.
    intro q1. case q1. left. reflexivity.
    intro q2. intros. right.
-   elim (le_lt_or_eq (S (S q2)) (S (S n2))).
+   elim (proj1 (Nat.lt_eq_cases (S (S q2)) (S (S n2)))).
    intros. elim (H3 (S (S q2))). assumption.
-   split. apply lt_n_S. apply lt_O_Sn. assumption.
+   split. apply -> Nat.succ_lt_mono. apply Nat.lt_0_succ. assumption.
    intros. assumption.
    apply div_le1. assumption.
    intros. apply anddec. apply ltdec. apply divdec.
@@ -173,11 +173,11 @@ Proof.
    intros.
    split with x0.
    split. assumption.
-   split. apply le_trans with (x * x).
-   apply le_trans with x. assumption. apply le_n_nn. assumption.
+   split. apply Nat.le_trans with (x * x).
+   apply Nat.le_trans with x. assumption. apply le_n_nn. assumption.
    split. apply div_trans with x. assumption. assumption.
    assumption.
-   unfold lt in |- *. apply le_trans with (x * x).
+   unfold lt in |- *. apply Nat.le_trans with (x * x).
    change (x < x * x) in |- *. apply sqr_ascend. assumption.
    assumption. assumption. assumption. assumption. assumption.
 Qed.
@@ -195,7 +195,7 @@ Proof.
    elim H2. intros.
    elim H4. intros.
    elim H6. intros.
-   elim (le_not_lt (x * x) n).
+   elim (proj1 (Nat.le_ngt (x * x) n)).
    assumption.
    unfold gt in H0. apply H0. assumption. assumption.
    assumption.
@@ -217,14 +217,14 @@ Proof.
    auto.
    intro q. case q.
    intros. elim H. intro.
-   elim (lt_n_O 1). assumption.
+   elim (Nat.nlt_0_r 1). assumption.
    intro q1. case q1.
    intros. elim H. intro.
-   elim (lt_irrefl 1). assumption.
+   elim (Nat.lt_irrefl 1). assumption.
    intro q2. case q2.
    simpl in |- *. intros. auto.
    intro q3. simpl in |- *. intros.
-   repeat apply gt_n_S. apply gt_Sn_O.
+   repeat apply -> Nat.succ_lt_mono. apply Nat.lt_0_succ.
 Qed.
 
 (** * Primality on Z *)

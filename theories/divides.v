@@ -22,8 +22,8 @@
    @version $Revision$
 *)
 
-Require Import ZArith.
-Require Import Wf_nat.
+From Stdlib Require Import ZArith.
+From Stdlib Require Import Wf_nat.
 
 Require Import lemmas.
 Require Import natZ.
@@ -53,7 +53,7 @@ Proof.
    split with (x0 * x).
    rewrite H1.
    rewrite H2.
-   rewrite mult_assoc.
+   rewrite Nat.mul_assoc.
    reflexivity.
 Qed.
 
@@ -61,7 +61,7 @@ Lemma div_antisym : forall a b : nat, Divides a b -> Divides b a -> a = b.
 Proof.
    intros. elim H. elim H0. intros x Ha y Hb.
    rewrite Hb in Ha.
-   rewrite mult_assoc_reverse in Ha.
+   rewrite <- Nat.mul_assoc in Ha.
    elim (mult_ppq_p0q1 a (y * x)). intro.
    rewrite H1 in Hb.
    simpl in Hb. rewrite H1. rewrite Hb. reflexivity.
@@ -90,7 +90,7 @@ Qed.
 Lemma div_le : forall d n : nat, 0 < n -> Divides d n -> d <= n.
 Proof.
    intros d n. case n.
-   intro. elim (lt_irrefl 0). assumption.
+   intro. elim (Nat.lt_irrefl 0). assumption.
    intros. apply div_le1. assumption.
 Qed.
 
@@ -190,7 +190,7 @@ Proof.
    split with x.
    split.
    split with d.
-   apply mult_comm.
+   apply Nat.mul_comm.
    split.
    assumption.
    right.
@@ -208,7 +208,7 @@ Theorem div_rem :
 Proof.
    intros d n.
    apply (lt_wf_ind n). intros N IH. intros.
-   elim (le_or_lt d N).
+   elim (Nat.le_gt_cases d N).
 
    (* case d<=N *)
    intro.
@@ -218,17 +218,17 @@ Proof.
    split with (S q'). split with r'.
    split. assumption.
    split. assumption.
-   simpl in |- *. rewrite <- Hx. rewrite (plus_assoc_reverse d (q' * d)).
+   simpl in |- *. rewrite <- Hx. rewrite <- (Nat.add_assoc d (q' * d)).
    rewrite <- H6. reflexivity.
-   unfold lt in |- *. apply witness_le. split with (pred d). rewrite plus_Snm_nSm.
-   rewrite <- (S_pred d 0). rewrite plus_comm. assumption. assumption.
+   unfold lt in |- *. apply witness_le. split with (pred d). rewrite Nat.add_succ_comm.
+   rewrite (Nat.lt_succ_pred 0 d). rewrite Nat.add_comm. assumption. assumption.
    assumption.
    assumption.
 
    (* case N<d *)
    intro.
    split with 0. split with N.
-   split. apply le_O_n.
+   split. apply Nat.le_0_l.
    split. assumption.
    simpl in |- *. reflexivity.
 Qed.
@@ -240,7 +240,7 @@ Proof.
    elim H1.
    intros.
    rewrite H2 in H.
-   rewrite (mult_comm q d) in H.
+   rewrite (Nat.mul_comm q d) in H.
    apply (le_diff0 (d * q) (d * x)).
    apply le_mult_l.
    apply le_S_n.
@@ -248,7 +248,7 @@ Proof.
    apply simpl_lt_mult_l with d.
    rewrite <- (mult_n_Sm d q).
    replace (d * x) with (d * q + r).
-   apply plus_lt_compat_l.
+   apply -> Nat.add_lt_mono_l.
    assumption.
    assumption.
 Qed.
@@ -260,23 +260,23 @@ Theorem notdiv_rem :
  exists q : nat, (exists r : nat, 0 < r /\ r < d /\ n = q * d + r).
 Proof.
    intros d n.
-   elim (le_or_lt d n).
+   elim (Nat.le_gt_cases d n).
    intro.
-   elim (le_lt_or_eq d n).
+   elim (proj1 (Nat.lt_eq_cases d n)).
    apply (lt_wf_ind n).
    intros N IH. intros.
    elim (lt_witness d N). intros.
    elim H3. intros.
-   elim (le_or_lt d x).
+   elim (Nat.le_gt_cases d x).
    intro.
-   elim (le_lt_or_eq d x).
+   elim (proj1 (Nat.lt_eq_cases d x)).
    intro.
    elim (divdec x d).
    intros.
    elim H8.
    intros.
    rewrite H9 in H4.
-   rewrite plus_comm in H4.
+   rewrite Nat.add_comm in H4.
    rewrite mult_n_Sm in H4.
    elim H2.
    split with (S x0).
@@ -300,14 +300,14 @@ Proof.
    split.
    assumption.
    simpl in |- *.
-   rewrite plus_assoc_reverse.
+   rewrite <- Nat.add_assoc.
    rewrite <- H14.
    symmetry  in |- *.
    assumption.
    rewrite <- H4.
    pattern x at 1 in |- *.
    replace x with (0 + x).
-   apply plus_lt_compat_r.
+   apply -> Nat.add_lt_mono_r.
    assumption.
    simpl in |- *.
    reflexivity.
@@ -317,7 +317,7 @@ Proof.
    intro.
    elim H2.
    split with 2.
-   rewrite mult_comm.
+   rewrite Nat.mul_comm.
    simpl in |- *.
    rewrite <- (plus_n_O d).
    rewrite <- H4.
@@ -339,7 +339,7 @@ Proof.
    intros.
    elim H2.
    split with 1.
-   rewrite mult_comm.
+   rewrite Nat.mul_comm.
    simpl in |- *.
    rewrite <- (plus_n_O d).
    symmetry  in |- *.
@@ -355,7 +355,7 @@ Proof.
    split with 0.
    split with (S n1).
    split.
-   apply lt_O_Sn.
+   apply Nat.lt_0_succ.
    split.
    assumption.
    simpl in |- *. reflexivity.
@@ -371,8 +371,8 @@ Proof.
    elim H0. intro y. intros.
    split with (x + y).
    rewrite H1. rewrite H2. symmetry  in |- *.
-   rewrite (mult_comm a). rewrite (mult_comm a). rewrite (mult_comm a).
-   apply mult_plus_distr_r.
+   rewrite (Nat.mul_comm a). rewrite (Nat.mul_comm a). rewrite (Nat.mul_comm a).
+   apply Nat.mul_add_distr_r.
 Qed.
 
 Lemma div_minus_compat :
@@ -380,11 +380,11 @@ Lemma div_minus_compat :
 Proof.
    intros. elim H. elim H0. intros.
    unfold Divides in |- *. rewrite H1. rewrite H2.
-   rewrite (mult_comm d).
-   rewrite (mult_comm d).
-   rewrite <- mult_minus_distr_r.
+   rewrite (Nat.mul_comm d).
+   rewrite (Nat.mul_comm d).
+   rewrite <- Nat.mul_sub_distr_r.
    split with (x0 - x).
-   apply mult_comm.
+   apply Nat.mul_comm.
 Qed.
 
 Lemma div_mult_compat_l :
@@ -397,7 +397,7 @@ Proof.
    unfold Divides in |- *.
    rewrite H0.
    split with (x * c).
-   rewrite mult_assoc.
+   rewrite Nat.mul_assoc.
    reflexivity.
 Qed.
 
@@ -410,7 +410,7 @@ Proof.
    rewrite <- Hk.
    simpl in |- *.
    rewrite abs_mult.
-   rewrite mult_comm.
+   rewrite Nat.mul_comm.
    simpl in |- *.
    rewrite <- plus_n_O.
    reflexivity.
@@ -427,13 +427,14 @@ Lemma div_plus_r :
 Proof.
    intros. elim H. elim H0. intros.
    split with (x - x0).
-   rewrite mult_comm.
-   rewrite mult_minus_distr_r.
-   rewrite mult_comm.
+   rewrite Nat.mul_comm.
+   rewrite Nat.mul_sub_distr_r.
+   rewrite Nat.mul_comm.
    rewrite <- H1.
-   rewrite mult_comm.
+   rewrite Nat.mul_comm.
    rewrite <- H2.
-   rewrite minus_plus.
+   rewrite Nat.add_comm.
+   rewrite Nat.add_sub.
    reflexivity.
 Qed.
 
@@ -583,7 +584,7 @@ Proof.
    elim H2. intros. elim H4. intros.
    split with (Z_of_nat qn). split with (Z_of_nat rn).
    split. split. change (Z_of_nat 0 <= Z_of_nat rn)%Z in |- *.
-   apply Znat.inj_le. apply le_O_n.
+   apply Znat.inj_le. apply Nat.le_0_l.
    apply Znat.inj_lt. assumption.
    rewrite <- Znat.inj_mult. rewrite <- Znat.inj_plus. apply Znat.inj_eq.
    assumption. change (Z.abs_nat d > Z.abs_nat 0) in |- *. apply gtzgt.
@@ -597,12 +598,12 @@ Proof.
    elim (div_rem (Z.abs_nat d) (Z.abs_nat n)).
    intro qn. intros. elim H1. intro rn. intros.
    elim H2. intros. elim H4. intros.
-   elim (le_lt_or_eq 0 rn).
+   elim (proj1 (Nat.lt_eq_cases 0 rn)).
 
    (* case 0<rn *)
    intro. split with (- Z_of_nat (S qn))%Z. split with (d - Z_of_nat rn)%Z.
    split. split. rewrite <- (inj_abs_pos d). apply Zle_minus. apply Znat.inj_le.
-   apply lt_le_weak. assumption.
+   apply Nat.lt_le_incl. assumption.
    apply Z.le_ge. apply Zlt_le_weak. apply Z.gt_lt. assumption.
    rewrite inj_abs_pos. apply Zplus_lt_reg_l with (Z_of_nat rn).
    unfold Zminus in |- *. rewrite (Zplus_comm d).
@@ -624,7 +625,7 @@ Proof.
    split with (- Z_of_nat qn)%Z. split with 0%Z.
    split. split. unfold Z.le in |- *. simpl in |- *. discriminate.
    apply Z.le_lt_trans with (Z_of_nat rn).
-   change (Z_of_nat 0 <= Z_of_nat rn)%Z in |- *. apply Znat.inj_le. apply le_O_n.
+   change (Z_of_nat 0 <= Z_of_nat rn)%Z in |- *. apply Znat.inj_le. apply Nat.le_0_l.
    apply Znat.inj_lt. assumption.
    rewrite <- Zplus_0_r_reverse. rewrite inj_abs_neg.
    rewrite Zopp_mult_distr_l_reverse. rewrite <- Znat.inj_mult.

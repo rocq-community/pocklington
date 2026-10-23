@@ -22,8 +22,8 @@
    @version $Revision$
  *)
 
-Require Import ZArith.
-Require Import Wf_nat.
+From Stdlib Require Import ZArith.
+From Stdlib Require Import Wf_nat.
 
 Require Import lemmas.
 Require Import natZ.
@@ -76,7 +76,7 @@ Proof.
    elim H.
    elim H0.
    intros.
-   apply le_antisym.
+   apply Nat.le_antisymm.
    apply H2.
    assumption.
    apply H4.
@@ -232,7 +232,7 @@ Proof.
    rewrite <- Znat.inj_mult.
    rewrite (Zplus_assoc (- (Z_of_nat (q * X) * delta))). 
    rewrite Zplus_opp_l. simpl in |- *. apply Zplus_comm.
-   apply gt_Sn_O.
+   apply Nat.lt_0_succ.
    apply
     (euclid_gcd1 d (Z_of_nat y) (Z_of_nat X) (Z_of_nat q) (Z_of_nat (S r1))).
    apply gcd_sym. assumption.

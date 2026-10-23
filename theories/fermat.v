@@ -22,8 +22,8 @@
    @version $Revision$
  *)
 
-Require Import Arith.
-Require Import ZArith.
+From Stdlib Require Import Arith.
+From Stdlib Require Import ZArith.
 
 Require Import lemmas.
 Require Import natZ.
@@ -147,7 +147,7 @@ Proof.
    intro. split with r. split.
    apply until_ok. split.
    assumption.
-   apply Zlt_succ_le. rewrite <- Znat.inj_S. rewrite <- (S_pred p 0).
+   apply Zlt_succ_le. rewrite <- Znat.inj_S. rewrite (Nat.lt_succ_pred 0 p).
    assumption. assumption.
    split with q. rewrite Zplus_comm. rewrite Zmult_comm. assumption.
 
@@ -185,7 +185,7 @@ Lemma until_not_0mod :
 Proof.
    intros. apply mod_repr_non_0. split.
    apply (until_pos (pred p) x). assumption.
-   rewrite (S_pred p 0). rewrite Znat.inj_S.
+   rewrite <- (Nat.lt_succ_pred 0 p). rewrite Znat.inj_S.
    apply Zle_lt_succ. apply until_le_n.
    assumption. assumption.
 Qed.
@@ -195,7 +195,7 @@ Lemma untiln_prod_not_0modp :
  0 < n -> n < p -> Prime p -> ~ Mod (zproduct (until n)) 0 p.
 Proof.
    simple induction n.
-   intro. elim (lt_irrefl 0). assumption.
+   intro. elim (Nat.lt_irrefl 0). assumption.
    intros m IH H0m Hmp Hp.
    change (~ Mod (Z_of_nat (S m) * zproduct (until m)) 0 p) in |- *.
    intro. elim (mod_mult_0 p (Z_of_nat (S m)) (zproduct (until m))).
@@ -204,13 +204,13 @@ Proof.
    apply Znat.inj_lt. assumption.
    apply Znat.inj_lt. assumption.
    assumption.
-   intro. elim (le_lt_or_eq 0 m). intro.
-   elim IH. assumption. apply lt_trans with (S m).
-   apply lt_n_Sn. assumption. assumption.
+   intro. elim (proj1 (Nat.lt_eq_cases 0 m)). intro.
+   elim IH. assumption. apply Nat.lt_trans with (S m).
+   apply Nat.lt_succ_diag_r. assumption. assumption.
    assumption. intro. rewrite <- H1 in H. simpl in H.
    elim mod_0not1 with p. elim Hp. intros. assumption.
    apply mod_sym. assumption.
-   apply le_O_n. assumption.
+   apply Nat.le_0_l. assumption.
    assumption.
 Qed.
 
@@ -258,7 +258,7 @@ Proof.
    split. elim (Zle_lt_or_eq 0 r). intro. assumption.
    intro. rewrite <- H3 in H0. rewrite <- Zplus_0_r_reverse in H0.
    elim until_not_0mod with p x.
-   apply lt_trans with 1. apply lt_n_Sn. assumption.
+   apply Nat.lt_trans with 1. apply Nat.lt_succ_diag_r. assumption.
    assumption.
    apply mod_mult_cancel_r with (a * ra)%Z. assumption.
    intro. elim mod_0not1 with p. assumption.
@@ -267,7 +267,7 @@ Proof.
    rewrite H0. simpl in |- *. unfold Mod in |- *. split with (q * a)%Z. simpl in |- *.
    rewrite Zmult_assoc. rewrite (Zmult_comm q). reflexivity.
    assumption. apply Zlt_succ_le.
-   rewrite <- Znat.inj_S. rewrite <- (S_pred p 1). assumption.
+   rewrite <- Znat.inj_S. rewrite (Nat.lt_succ_pred 1 p). assumption.
    assumption.
    apply mod_mult_cancel_r with ra. assumption.
    intro. elim mod_0not1 with p. assumption.
@@ -282,7 +282,7 @@ Proof.
    rewrite (Zmult_comm 1 r). apply mod_mult_compat.
    apply mod_refl. apply mod_sym. assumption.
    change (Z_of_nat p > Z_of_nat 0)%Z in |- *. apply Znat.inj_gt.
-   apply gt_trans with 1. assumption. apply gt_Sn_n.
+   apply Nat.lt_trans with 1. apply Nat.lt_succ_diag_r. assumption.
    assumption. assumption.
 Qed.
 
@@ -297,25 +297,25 @@ Proof.
    intro. elim (Zlt_not_le x (Z_of_nat (S m))).
    rewrite Znat.inj_S. apply Zle_lt_succ. apply until_le_n.
    assumption. apply Zeq_le. apply mod_repr_eq with p.
-   elim H. intros. apply lt_trans with 1. apply lt_n_Sn. assumption.
+   elim H. intros. apply Nat.lt_trans with 1. apply Nat.lt_succ_diag_r. assumption.
    split. change (Z_of_nat 0 < Z_of_nat (S m))%Z in |- *. apply Znat.inj_lt.
-   apply lt_O_Sn. apply Znat.inj_lt. assumption.
+   apply Nat.lt_0_succ. apply Znat.inj_lt. assumption.
    split. apply until_pos with m. assumption.
    apply Z.le_lt_trans with (Z_of_nat m).
    apply until_le_n. assumption.
-   apply Znat.inj_lt. apply le_lt_trans with (S m).
-   apply le_n_Sn. assumption.
+   apply Znat.inj_lt. apply Nat.le_lt_trans with (S m).
+   apply Nat.le_succ_diag_r. assumption.
    assumption.
-   apply IH. apply le_lt_trans with (S m).
-   apply le_n_Sn. assumption.
+   apply IH. apply Nat.le_lt_trans with (S m).
+   apply Nat.le_succ_diag_r. assumption.
 Qed.
 
 Lemma until_nodoubles :
  forall p : nat, Prime p -> nodoubles p (until (pred p)).
 Proof.
    intros. apply until_nodoubles1. assumption.
-   apply lt_pred_n_n. apply lt_trans with 1.
-   apply lt_n_Sn. elim H. intros. assumption.
+   apply Nat.lt_pred_l. apply <- Nat.neq_0_lt_0. apply Nat.lt_trans with 1.
+   apply Nat.lt_succ_diag_r. elim H. intros. assumption.
 Qed.
 
 (** * Permutations modulo p. *)

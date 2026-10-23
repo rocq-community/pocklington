@@ -22,9 +22,9 @@
    @version $Revision$
 *)
 
-Require Import Arith.
-Require Import ZArith.
-Require Import EqNat.
+From Stdlib Require Import Arith.
+From Stdlib Require Import ZArith.
+From Stdlib Require Import EqNat.
 
 (** Checks that all nats before n are P *)
 
@@ -52,7 +52,7 @@ Proof.
    split.
    tauto.
    intros.
-   elim (lt_n_O q).
+   elim (Nat.nlt_0_r q).
    assumption.
    simpl in |- *.
    intros m IHm.
@@ -76,7 +76,7 @@ Proof.
    intro.
    intro.
    intros.
-   elim (le_lt_or_eq q m).
+   elim (proj1 (Nat.lt_eq_cases q m)).
    intros.
    apply H0.
    assumption.
@@ -102,7 +102,7 @@ Proof.
    intros.
    elim H0.
    intros.
-   elim (lt_n_O x).
+   elim (Nat.nlt_0_r x).
    assumption.
    intros.
    elim H.
@@ -117,7 +117,7 @@ Proof.
    intros.
    elim H2.
    intros.
-   elim (le_lt_or_eq x m).
+   elim (proj1 (Nat.lt_eq_cases x m)).
    intros.
    left.
    apply H.
@@ -184,9 +184,9 @@ Qed.
 
 Lemma ledec : forall n m : nat, n <= m \/ ~ n <= m.
 Proof.
-   intros. elim (le_or_lt n m).
+   intros. elim (Nat.le_gt_cases n m).
    left. assumption.
-   right. apply lt_not_le. assumption.
+   right. apply -> Nat.lt_nge. assumption.
 Qed.
 
 Lemma ltdec : forall n m : nat, n < m \/ ~ n < m.
@@ -266,15 +266,15 @@ Theorem alldec :
  (forall x : nat, x < N -> P x) \/ ~ (forall x : nat, x < N -> P x).
 Proof.
    intro P. simple induction N.
-   left. intros. elim (lt_n_O x). assumption.
+   left. intros. elim (Nat.nlt_0_r x). assumption.
    intros M IH decP.
    elim IH. elim (decP M).
-   left. intros. unfold lt in H1. elim (le_lt_or_eq x M). intros.
+   left. intros. unfold lt in H1. elim (proj1 (Nat.lt_eq_cases x M)). intros.
    apply H0. assumption.
    intros. rewrite H2. assumption.
    apply le_S_n. assumption.
-   right. intro. apply H. apply H1. apply lt_n_Sn.
-   right. intro. apply H. intros. apply H0. apply lt_S. assumption.
+   right. intro. apply H. apply H1. apply Nat.lt_succ_diag_r.
+   right. intro. apply H. intros. apply H0. apply Nat.lt_lt_succ_r. assumption.
    assumption.
 Qed.
 
@@ -285,20 +285,20 @@ Theorem exdec :
 Proof.
    intro P. simple induction N.
    intro decP.
-   right. intro. elim H. intros. elim H0. intros. elim (lt_n_O x). assumption.
+   right. intro. elim H. intros. elim H0. intros. elim (Nat.nlt_0_r x). assumption.
    intros M IH decP.
    elim IH. left.
    elim H. intros. split with x. elim H0. intros.
    split.
-   apply lt_S. assumption.
+   apply Nat.lt_lt_succ_r. assumption.
    assumption.
    intros.
    elim (decP M).
-   left. split with M. split. apply lt_n_Sn.
+   left. split with M. split. apply Nat.lt_succ_diag_r.
    assumption.
    right. intro.
    elim H1. intros. elim H2. intros.
-   unfold lt in H3. elim (le_lt_or_eq x M).
+   unfold lt in H3. elim (proj1 (Nat.lt_eq_cases x M)).
    intro. apply H. split with x. split. assumption.
    assumption.
    intro. apply H0. rewrite <- H5. assumption.
@@ -321,13 +321,13 @@ Proof.
    elim H1.
    intros.
    apply (H2 x H3 H4).
-   elim N. intros. elim H0. intros. elim (lt_n_O x). assumption.
+   elim N. intros. elim H0. intros. elim (Nat.nlt_0_r x). assumption.
    intros M IH. intros.
    elim (H M).
    intros.
    split with M.
    split.
-   apply lt_n_Sn.
+   apply Nat.lt_succ_diag_r.
    assumption.
    intros.
    cut (~ (forall x : nat, x < M -> ~ P x)).
@@ -338,14 +338,14 @@ Proof.
    elim H3.
    intros.
    split.
-   apply lt_S.
+   apply Nat.lt_lt_succ_r.
    assumption.
    assumption.
    assumption.
    intro.
    apply H0.
    intros.
-   elim (le_lt_or_eq x M).
+   elim (proj1 (Nat.lt_eq_cases x M)).
    intros.
    apply H2.
    assumption.
@@ -362,7 +362,7 @@ Qed.
 
 Definition istrue (b : bool) := if b then True else False.
 
-Lemma beq_nat_ok : forall n m : nat, n = m <-> istrue (beq_nat n m).
+Lemma beq_nat_ok : forall n m : nat, n = m <-> istrue (Nat.eqb n m).
 Proof.
    simple induction n.
    intro m. case m. simpl in |- *. tauto. simpl in |- *. split. discriminate. tauto.
@@ -374,7 +374,7 @@ Proof.
    simpl in |- *. intros. rewrite (H1 H2). reflexivity.
 Qed.
 
-Lemma beq_nat_eq : forall n m : nat, n = m <-> beq_nat n m = true.
+Lemma beq_nat_eq : forall n m : nat, n = m <-> Nat.eqb n m = true.
 Proof.
    simple induction n.
    intro. case m.
@@ -388,7 +388,7 @@ Proof.
    intros. rewrite H0. reflexivity. assumption.
 Qed.
 
-Lemma beq_nat_neq : forall n m : nat, n <> m <-> beq_nat n m = false.
+Lemma beq_nat_neq : forall n m : nat, n <> m <-> Nat.eqb n m = false.
 Proof.
    simple induction n.
    intro. case m. simpl in |- *. split.
@@ -402,37 +402,12 @@ Proof.
    intro. intro. elim H0. assumption. injection H2. intro. assumption.
 Qed.
 
-Lemma zeq_bool_eq : forall x y : Z, x = y <-> Zeq_bool x y = true.
+Lemma zeq_bool_eq : forall x y : Z, x = y <-> Z.eqb x y = true.
 Proof.
-   intros. elim (Zcompare_Eq_iff_eq x y). intros. unfold Zeq_bool in |- *. split.
-
-   (* -> *)
-   intro. rewrite H0.
-   reflexivity. assumption.
-
-   (* <- *)
-   intro. apply H. generalize H1.
-   elim (x ?= y)%Z.
-   intro. reflexivity.
-   intro. discriminate H2.
-   intro. discriminate H2.
+   intros. symmetry  in |- *. apply Z.eqb_eq.
 Qed.
 
-Lemma zeq_bool_neq : forall x y : Z, x <> y <-> Zeq_bool x y = false.
+Lemma zeq_bool_neq : forall x y : Z, x <> y <-> Z.eqb x y = false.
 Proof.
-   intros. elim (Zcompare_Eq_iff_eq x y). intros. unfold Zeq_bool in |- *. split.
-
-   (* -> *)
-   generalize H0. generalize H. elim (x ?= y)%Z.
-   intros. elim H3. apply H1. reflexivity.
-   intros. reflexivity.
-   intros. reflexivity.
-
-   (* <- *)
-   intros. generalize H1. generalize H0. elim (x ?= y)%Z.
-   intros. discriminate H3.
-   intros. intro. cut (Datatypes.Lt = Datatypes.Eq). discriminate.
-   apply H2. assumption.
-   intros. intro. cut (Datatypes.Gt = Datatypes.Eq). discriminate.
-   apply H2. assumption.
+   intros. symmetry  in |- *. apply Z.eqb_neq.
 Qed.

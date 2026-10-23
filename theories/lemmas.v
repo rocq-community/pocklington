@@ -24,14 +24,14 @@
 
 Global Set Asymmetric Patterns.
 
-Require Import ZArith.
-Require Import EqNat.
+From Stdlib Require Import ZArith.
+From Stdlib Require Import EqNat.
 
 Lemma predminus1 : forall n : nat, pred n = n - 1.
 Proof.
    intro n. case n.
    simpl in |- *. reflexivity.
-   simpl in |- *. intro m. rewrite <- minus_n_O. reflexivity.
+   simpl in |- *. intro m. rewrite Nat.sub_0_r. reflexivity.
 Qed.
 
 Lemma le_mult_l : forall p q : nat, p <= q -> forall r : nat, r * p <= r * q.
@@ -42,7 +42,7 @@ Proof.
    apply le_n.
    intros r1 IHr1.
    simpl in |- *.
-   apply plus_le_compat.
+   apply Nat.add_le_mono.
    assumption.
    assumption.
 Qed.
@@ -80,7 +80,7 @@ Proof.
    intros r1 IHr1.
    rewrite <- (mult_n_Sm p r1).
    rewrite <- (mult_n_Sm q r1).
-   apply plus_le_compat.
+   apply Nat.add_le_mono.
    assumption.
    assumption.
 Qed.
@@ -88,13 +88,13 @@ Qed.
 Lemma sqrbound : forall p q : nat, p * p <= p * q \/ q * q <= p * q.
 Proof.
    intros.
-   elim (le_or_lt p q).
+   elim (Nat.le_gt_cases p q).
    left.
    apply le_mult_l.
    assumption.
    right.
    apply le_mult_r.
-   apply lt_le_weak.
+   apply Nat.lt_le_incl.
    assumption.
 Qed.
 
@@ -108,15 +108,15 @@ Proof.
    simpl in |- *.
    intros.
    apply le_n_S.
-   rewrite (plus_comm m (n1 * S m)).
-   apply le_plus_trans.
+   rewrite (Nat.add_comm m (n1 * S m)).
+   eapply Nat.le_trans; [ | apply Nat.le_add_r ].
    apply IHn1.
 Qed.
 
 Lemma le_n_mn : forall n m : nat, n <= S m * n.
 Proof.
    intros.
-   rewrite (mult_comm (S m) n).
+   rewrite (Nat.mul_comm (S m) n).
    apply le_n_nm.
 Qed.
 
@@ -124,33 +124,33 @@ Lemma le_n_nn : forall n : nat, n <= n * n.
 Proof.
    intro n. case n.
    simpl in |- *. apply le_n.
-   simpl in |- *. intros. apply le_n_S. apply le_plus_trans. apply le_n.
+   simpl in |- *. intros. apply le_n_S. eapply Nat.le_trans; [ | apply Nat.le_add_r ]. apply le_n.
 Qed.
 
 Lemma lt_n_nm : forall n m : nat, 0 < n -> 1 < m -> n < n * m. 
 Proof.
    intros n m.
-   case n. intros. elim (lt_n_O 0). assumption.
-   intro n1. case m. intros. elim (lt_n_O 1). assumption.
-   intro m1. case m1. intros. elim (lt_irrefl 1). assumption.
+   case n. intros. elim (Nat.nlt_0_r 0). assumption.
+   intro n1. case m. intros. elim (Nat.nlt_0_r 1). assumption.
+   intro m1. case m1. intros. elim (Nat.lt_irrefl 1). assumption.
    intro m2. elim n1.
-   simpl in |- *. intros. apply lt_n_S. apply lt_O_Sn.
+   simpl in |- *. intros. apply -> Nat.succ_lt_mono. apply Nat.lt_0_succ.
    simpl in |- *. intros n2 IH. intros.
-   apply lt_n_S.
-   apply lt_trans with (S (S (m2 + n2 * S (S m2)))).
+   apply -> Nat.succ_lt_mono.
+   apply Nat.lt_trans with (S (S (m2 + n2 * S (S m2)))).
    apply IH.
-   apply lt_O_Sn.
-   apply lt_n_S.
-   apply lt_O_Sn.
-   apply lt_n_S.
-   rewrite (plus_comm m2).
-   rewrite (plus_comm m2).
+   apply Nat.lt_0_succ.
+   apply -> Nat.succ_lt_mono.
+   apply Nat.lt_0_succ.
+   apply -> Nat.succ_lt_mono.
+   rewrite (Nat.add_comm m2).
+   rewrite (Nat.add_comm m2).
    simpl in |- *.
-   apply lt_n_S.
-   apply lt_le_trans with (S (n2 * S (S m2) + m2)).
-   apply lt_n_Sn.
+   apply -> Nat.succ_lt_mono.
+   apply Nat.lt_le_trans with (S (n2 * S (S m2) + m2)).
+   apply Nat.lt_succ_diag_r.
    apply le_n_S.
-   apply le_plus_trans.
+   eapply Nat.le_trans; [ | apply Nat.le_add_r ].
    apply le_n.
 Qed.
 
@@ -158,20 +158,20 @@ Lemma sqr_ascend : forall n : nat, n > 1 -> n < n * n.
 Proof.
    simple induction n.
    intros.
-   elim (lt_n_O 1).
+   elim (Nat.nlt_0_r 1).
    assumption.
    intros m IHm.
    intro.
    unfold gt in H.
    unfold lt in H.
-   elim (le_lt_or_eq 1 m).
+   elim (proj1 (Nat.lt_eq_cases 1 m)).
    intros.
    simpl in |- *.
-   apply lt_n_S.
+   apply -> Nat.succ_lt_mono.
    rewrite <- (mult_n_Sm m m).
-   rewrite plus_comm.
-   apply lt_plus_trans.
-   apply lt_plus_trans.
+   rewrite Nat.add_comm.
+   apply Nat.lt_lt_add_r.
+   apply Nat.lt_lt_add_r.
    apply IHm.
    assumption.
    intros.
@@ -225,7 +225,7 @@ Proof.
    rewrite <- plus_n_Sm.
    assumption.
    apply le_n_S.
-   apply le_O_n.
+   apply Nat.le_0_l.
    assumption.
 Qed.
 
@@ -237,16 +237,17 @@ Proof.
    replace a with 0.
    simpl in |- *.
    apply le_n.
-   apply le_n_O_eq.
+   symmetry  in |- *.
+   apply -> Nat.le_0_r.
    assumption.
    intros b1 IHb1.
    simpl in |- *.
    intros.
-   elim (le_lt_or_eq a (S b1)).
+   elim (proj1 (Nat.lt_eq_cases a (S b1))).
    unfold lt in |- *.
    intros.
-   rewrite (plus_comm d (b1 * d)).
-   apply le_plus_trans.
+   rewrite (Nat.add_comm d (b1 * d)).
+   eapply Nat.le_trans; [ | apply Nat.le_add_r ].
    apply IHb1.
    apply le_S_n.
    assumption.
@@ -264,13 +265,13 @@ Lemma lt_lt_mult : forall a b c d : nat, a < b -> c < d -> a * c < b * d.
 Proof.
    unfold lt in |- *.
    intros.
-   apply le_trans with (S a * S c).
+   apply Nat.le_trans with (S a * S c).
    simpl in |- *.
    apply le_n_S.
    rewrite <- (mult_n_Sm a c).
-   rewrite (plus_comm c (a * c + a)).
-   apply le_plus_trans.
-   apply le_plus_trans.
+   rewrite (Nat.add_comm c (a * c + a)).
+   eapply Nat.le_trans; [ | apply Nat.le_add_r ].
+   eapply Nat.le_trans; [ | apply Nat.le_add_r ].
    apply le_n.
    apply le_le_mult.
    assumption.
@@ -280,12 +281,12 @@ Qed.
 Lemma lt_n_nm_m_gt_1 : forall a b : nat, a < a * b -> b > 1.
 Proof.
    intros a b. case b.
-   rewrite <- (mult_n_O a). intro. elim (lt_n_O a). assumption.
+   rewrite <- (mult_n_O a). intro. elim (Nat.nlt_0_r a). assumption.
    intro b1. case b1.
    rewrite <- (mult_n_Sm a 0).
    rewrite <- (mult_n_O a). simpl in |- *. intro.
-   elim (lt_irrefl a). assumption.
-   intros. apply gt_n_S. apply gt_Sn_O.
+   elim (Nat.lt_irrefl a). assumption.
+   intros. apply -> Nat.succ_lt_mono. apply Nat.lt_0_succ.
 Qed.
 
 Lemma n0n1_or_gt : forall n : nat, n = 0 \/ n = 1 \/ n > 1.
@@ -295,7 +296,7 @@ Proof.
    intro n1. case n1.
    right. left. reflexivity.
    intro n2.
-   right. right. apply gt_n_S. apply gt_Sn_O.
+   right. right. apply -> Nat.succ_lt_mono. apply Nat.lt_0_succ.
 Qed.
 
 Lemma lt_multpred_pp : forall p : nat, p > 1 -> pred p * pred p < p * p.
@@ -303,18 +304,18 @@ Proof.
    intro.
    case p.
    intro.
-   elim (lt_n_O 1).
+   elim (Nat.nlt_0_r 1).
    assumption.
    intro p1.
    case p1.
    intro.
-   elim (lt_irrefl 1).
+   elim (Nat.lt_irrefl 1).
    assumption.
    intro p2.
    intros.
    apply lt_lt_mult.
-   simpl in |- *. apply lt_n_Sn.
-   simpl in |- *. apply lt_n_Sn.
+   simpl in |- *. apply Nat.lt_succ_diag_r.
+   simpl in |- *. apply Nat.lt_succ_diag_r.
 Qed.
 
 Lemma le_diff0 : forall b a c : nat, a <= b -> a = b + c -> c = 0.
@@ -326,7 +327,7 @@ Proof.
    rewrite H0.
    reflexivity.
    intros.
-   elim (lt_n_O n).
+   elim (Nat.nlt_0_r n).
    assumption.
    intros b1 IH.
    simpl in |- *.
@@ -343,27 +344,27 @@ Proof.
    simple induction a.
    simpl in |- *.
    intros.
-   elim (lt_irrefl 0).
+   elim (Nat.lt_irrefl 0).
    assumption.
    intros a1 IH.
    intros.
-   elim (le_or_lt b c).
+   elim (Nat.le_gt_cases b c).
    intro.
-   elim (le_lt_or_eq b c).
+   elim (proj1 (Nat.lt_eq_cases b c)).
    intro.
    assumption.
    intros.
    rewrite H1 in H.
-   elim (lt_irrefl (S a1 * c)).
+   elim (Nat.lt_irrefl (S a1 * c)).
    assumption.
    assumption.
    intros.
    cut (S a1 * c <= S a1 * b).
    intros.
-   elim (le_not_lt (S a1 * c) (S a1 * b)).
+   elim (proj1 (Nat.le_ngt (S a1 * c) (S a1 * b))).
    assumption.
    assumption.
-   apply lt_le_weak.
+   apply Nat.lt_le_incl.
    apply lt_mult_l.
    assumption.
 Qed.
@@ -372,16 +373,16 @@ Lemma simpl_le_mult_l : forall a b c : nat, 0 < a -> a * b <= a * c -> b <= c.
 Proof.
    simple induction a.
    intros.
-   elim (lt_n_O 0).
+   elim (Nat.nlt_0_r 0).
    assumption.
    intros a1 IH.
    intros.
    simpl in H0.
-   elim (le_or_lt b c).
+   elim (Nat.le_gt_cases b c).
    intro.
    assumption.
    intro.
-   elim (lt_not_le (S a1 * c) (S a1 * b)).
+   elim (proj1 (Nat.lt_nge (S a1 * c) (S a1 * b))).
    apply lt_mult_l.
    assumption.
    assumption.
@@ -389,7 +390,7 @@ Qed.
 
 Lemma simpl_eq_mult_l : forall a b c : nat, 0 < a -> a * b = a * c -> b = c.
 Proof.
-   intros. apply le_antisym.
+   intros. apply Nat.le_antisymm.
    apply simpl_le_mult_l with a. assumption. rewrite H0. apply le_n.
    apply simpl_le_mult_l with a. assumption. rewrite H0. apply le_n.
 Qed.
@@ -398,7 +399,7 @@ Lemma mult_ppq_p0q1 : forall p q : nat, p = p * q -> p = 0 \/ q = 1.
 Proof.
    intro p. case p. left. reflexivity.
    intro p1. right.
-   apply simpl_eq_mult_l with (S p1). apply lt_O_Sn.
+   apply simpl_eq_mult_l with (S p1). apply Nat.lt_0_succ.
    rewrite <- H.
    rewrite <- mult_n_Sm. rewrite <- mult_n_O.
    simpl in |- *. reflexivity.
@@ -466,6 +467,7 @@ Proof.
 Qed.
 
 Lemma S_inj : forall n m : nat, S n = S m -> n = m.
+Proof.
   intros n m H; injection H; trivial.
 Qed.
 

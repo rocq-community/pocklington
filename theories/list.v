@@ -22,9 +22,9 @@
    @version $Revision$
 *)
 
-Require Import Arith.
-Require Import ZArith.
-Require Import EqNat.
+From Stdlib Require Import Arith.
+From Stdlib Require Import ZArith.
+From Stdlib Require Import EqNat.
 
 Require Import dec.
 Require Import natZ.
@@ -70,8 +70,6 @@ Fixpoint map (A B : Set) (f : A -> B) (l : list A) {struct l} :
   | Nil => Nil B
   | Cons a r => Cons B (f a) (map A B f r)
   end.
-
-Notation Map := (map _ _) (only parsing).
 
 Lemma map_length :
  forall (A B : Set) (f : A -> B) (l : list A),
@@ -230,7 +228,7 @@ Fixpoint product (qlist : natlist) : nat :=
 Fixpoint drop (q : nat) (qlist : natlist) {struct qlist} : natlist :=
   match qlist with
   | Nil => Nil nat
-  | Cons q' l => if beq_nat q q' then l else Cons nat q' (drop q l)
+  | Cons q' l => if Nat.eqb q q' then l else Cons nat q' (drop q l)
   end.
 
 (** Multiply all elements of qlist, except for (first occurance of) q *)
@@ -265,8 +263,8 @@ Proof.
 
    (* case ~q=q1 *)
    intro. rewrite multdrop_cons_neq.
-   rewrite <- (IH q). rewrite mult_assoc.
-   rewrite (mult_comm q q1). rewrite mult_assoc. reflexivity.
+   rewrite <- (IH q). rewrite Nat.mul_assoc.
+   rewrite (Nat.mul_comm q q1). rewrite Nat.mul_assoc. reflexivity.
    unfold inlist in H. simpl in H. elim H.
    intro. elim H0. assumption.  
    intro. assumption.
@@ -315,7 +313,7 @@ Qed.
 Fixpoint zdrop (x : Z) (l : Zlist) {struct l} : Zlist :=
   match l with
   | Nil => Nil Z
-  | Cons h t => if Zeq_bool x h then t else Cons Z h (zdrop x t)
+  | Cons h t => if Z.eqb x h then t else Cons Z h (zdrop x t)
   end.
 
 Lemma zdrop_head_eq :

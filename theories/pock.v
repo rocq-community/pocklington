@@ -22,8 +22,8 @@
    @version $Revision$
 *)
 
-Require Import Arith.
-Require Import ZArith.
+From Stdlib Require Import Arith.
+From Stdlib Require Import ZArith.
 
 Require Import lemmas.
 Require Import natZ.
@@ -81,15 +81,15 @@ Proof.
    intros.
    apply primepropdiv. assumption. intro p. intros.
    elim H6. intros. elim H7. intro pdn. intros.
-   unfold gt in |- *. apply le_lt_trans with (pred p * pred p).
-   apply le_trans with (q * q). assumption.
+   unfold gt in |- *. apply Nat.le_lt_trans with (pred p * pred p).
+   apply Nat.le_trans with (q * q). assumption.
    cut (q <= pred p). intros.
    apply le_le_mult. assumption. assumption.
    apply order_le_predp with (Exp a m). assumption.
    cut (Mod (Exp (Exp a m) q) 1 p). intros.
    elim (order_ex (Exp a m) p). intro r. intros.
    elim H12. intros. elim H14. intros. elim H16. intros.
-   elim (le_lt_or_eq r q). intro.
+   elim (proj1 (Nat.lt_eq_cases r q)). intro.
    cut (Divides r q). intros.
    elim (techlemma3 qlist r q). intro qi. intros.
    elim H21. intros. elim H23. intro rdm. intros.
@@ -108,7 +108,7 @@ Proof.
      with ((Exp a (m * multDrop qi qlist) - 1) * alpha + Z_of_nat n * beta)%Z.
    apply mod_plus_compat. apply mod_mult_compat. apply mod_minus_compat.
    rewrite H24.
-   rewrite mult_assoc.
+   rewrite Nat.mul_assoc.
    apply mod_sym.
    rewrite exp_mult. apply mod_exp1. rewrite exp_mult.
    assumption.
@@ -120,16 +120,16 @@ Proof.
    assumption.
    assumption.
    apply (order_div (Exp a m) r p H14 q).
-   apply lt_trans with r.
+   apply Nat.lt_trans with r.
    assumption.
    assumption.
    assumption.
    intro. rewrite <- H19. assumption.
    apply H18.
-   elim (le_lt_or_eq 0 q).
+   elim (proj1 (Nat.lt_eq_cases 0 q)).
    intro. assumption.
-   intro. rewrite <- H19 in H5. simpl in H5. elim (le_not_lt n 0). assumption.
-   apply lt_trans with 1. apply lt_O_Sn. assumption. apply le_O_n.
+   intro. rewrite <- H19 in H5. simpl in H5. elim (proj1 (Nat.le_ngt n 0)). assumption.
+   apply Nat.lt_trans with 1. apply Nat.lt_0_succ. assumption. apply Nat.le_0_l.
    assumption.
    assumption.
    apply mod_not_exp_0.
@@ -138,14 +138,14 @@ Proof.
    apply mod_trans with (Exp a (pred n)).
    apply mod_sym.
    apply moda0_exp_compat.
-   unfold gt in |- *. apply lt_trans with 1. apply lt_O_Sn.
+   unfold gt in |- *. apply Nat.lt_trans with 1. apply Nat.lt_0_succ.
    assumption.
    assumption.
-   apply gt_pred. assumption.
-   rewrite H0. simpl in |- *. rewrite mult_comm. rewrite exp_mult. assumption.
+   apply -> Nat.lt_succ_lt_pred. assumption.
+   rewrite H0. simpl in |- *. rewrite Nat.mul_comm. rewrite exp_mult. assumption.
    rewrite H0 in H3. simpl in H3. rewrite <- H0 in H3.
    apply modpq_modp with pdn.
-   rewrite <- H10. rewrite <- exp_mult. rewrite mult_comm. assumption.
+   rewrite <- H10. rewrite <- exp_mult. rewrite Nat.mul_comm. assumption.
    apply lt_multpred_pp. assumption.
 Qed.
 
@@ -243,7 +243,7 @@ Proof.
    change (Z.abs_nat n > Z.abs_nat 1) in |- *. apply gtzgt. assumption.
    unfold Z.le in |- *. simpl in |- *. discriminate.
    assumption.
-   rewrite H2. rewrite abs_plus_pos. rewrite abs_mult. rewrite plus_comm.
+   rewrite H2. rewrite abs_plus_pos. rewrite abs_mult. rewrite Nat.add_comm.
    simpl in |- *. reflexivity.
    apply isnat_mult.
    assumption.

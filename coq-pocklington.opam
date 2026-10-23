@@ -5,20 +5,21 @@ opam-version: "2.0"
 maintainer: "palmskog@gmail.com"
 version: "dev"
 
-homepage: "https://github.com/coq-community/pocklington"
-dev-repo: "git+https://github.com/coq-community/pocklington.git"
-bug-reports: "https://github.com/coq-community/pocklington/issues"
+homepage: "https://github.com/rocq-community/pocklington"
+dev-repo: "git+https://github.com/rocq-community/pocklington.git"
+bug-reports: "https://github.com/rocq-community/pocklington/issues"
 license: "LGPL-2.1-or-later"
 
-synopsis: "Pocklington's criterion for primality in Coq"
+synopsis: "Pocklington's criterion for primality in Rocq"
 description: """
-Coq formalization of Pocklington's criterion for checking primality of
+Rocq formalization of Pocklington's criterion for checking primality of
 large natural numbers. Includes a formal proof of Fermat's little theorem."""
 
 build: ["dune" "build" "-p" name "-j" jobs]
 depends: [
-  "dune" {>= "2.5"}
-  "coq" {(>= "8.7" & < "8.17~") | (= "dev")}
+  "dune" {>= "3.21"}
+  "rocq-core" {>= "9.0"}
+  "rocq-stdlib" {>= "9.0"}
 ]
 
 tags: [

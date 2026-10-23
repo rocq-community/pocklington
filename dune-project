@@ -1,3 +1,3 @@
-(lang dune 2.5)
-(using coq 0.2)
+(lang dune 3.21)
+(using rocq 0.11)
 (name pocklington)

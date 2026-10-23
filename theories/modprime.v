@@ -22,9 +22,9 @@
    @version $Revision$
 *)
 
-Require Import Arith.
-Require Import ZArith.
-Require Import Wf_nat.
+From Stdlib Require Import Arith.
+From Stdlib Require Import ZArith.
+From Stdlib Require Import Wf_nat.
 
 Require Import lemmas.
 Require Import natZ.
@@ -80,7 +80,7 @@ Proof.
    apply zdivdiv. apply divmultgcd with (Z_of_nat n).
    elim H. intros. apply Zgt_neq.
    change (Z_of_nat p > Z_of_nat 0)%Z in |- *. apply Znat.inj_gt.
-   apply gt_trans with 1. assumption. unfold gt in |- *. unfold lt in |- *. apply le_n.
+   apply Nat.lt_trans with 1. unfold lt in |- *. apply le_n. assumption.
    rewrite <- Znat.inj_mult. apply divzdiv. rewrite abs_inj. rewrite abs_inj.
    assumption. assumption. assumption.
 Qed.
@@ -103,8 +103,8 @@ Proof.
    rewrite <- Zmult_plus_distr_r. rewrite Zplus_opp_r.
    rewrite <- Zmult_0_r_reverse. rewrite <- Zplus_0_r_reverse. reflexivity.
    apply Zgt_neq. change (Z_of_nat p > Z_of_nat 0)%Z in |- *.
-   apply Znat.inj_gt. apply gt_trans with 1. elim H. intros. assumption.
-   unfold gt in |- *. unfold lt in |- *. apply le_n.
+   apply Znat.inj_gt. apply Nat.lt_trans with 1. unfold lt in |- *. apply le_n.
+   elim H. intros. assumption.
    assumption. assumption.
 Qed.
 
@@ -175,7 +175,7 @@ Lemma techlemma3 :
 Proof.
    simple induction qlist.
    simpl in |- *. intros. rewrite H2 in H0.
-   elim (lt_not_le a 1). assumption. unfold lt in H. assumption.
+   elim (proj1 (Nat.lt_nge a 1)). assumption. unfold lt in H. assumption.
    intros qi restqs IH. intros.
    elim (divdec a qi).
 
@@ -194,20 +194,20 @@ Proof.
    elim (eqdec qi qj).
    intro. rewrite H11. rewrite multdrop_cons_eq.
    rewrite <- (multdrop_mult restqs qj). split with z.
-   rewrite mult_assoc_reverse. rewrite H10. reflexivity. assumption.
+   rewrite <- Nat.mul_assoc. rewrite H10. reflexivity. assumption.
 
    intro. rewrite multdrop_cons_neq.
    split with z.
-   rewrite mult_assoc_reverse.
+   rewrite <- Nat.mul_assoc.
    rewrite H10.
    reflexivity.
    intro. elim H11. rewrite H12. reflexivity.
 
-   elim (le_or_lt y 0). intro.
-   elim (le_lt_or_eq y 0). intro.
-   elim (lt_n_O y). assumption.
+   elim (Nat.le_gt_cases y 0). intro.
+   elim (proj1 (Nat.lt_eq_cases y 0)). intro.
+   elim (Nat.nlt_0_r y). assumption.
    intro. rewrite H8 in H6. rewrite <- mult_n_O in H6. rewrite H6 in H.
-   elim (lt_n_O 0). assumption.
+   elim (Nat.nlt_0_r 0). assumption.
    assumption.
    intro. assumption.
 
@@ -221,7 +221,7 @@ Proof.
    rewrite H5 in H2.
    rewrite H6 in H2.
    split with x.
-   rewrite mult_assoc_reverse in H2.
+   rewrite <- Nat.mul_assoc in H2.
    apply simpl_eq_mult_l with qi.
    unfold allPrime in H3.
    simpl in H3.
@@ -229,8 +229,8 @@ Proof.
    intros.
    elim H7.
    intros.
-   apply lt_trans with 1.
-   apply lt_O_Sn.
+   apply Nat.lt_trans with 1.
+   apply Nat.lt_0_succ.
    assumption.
    symmetry  in |- *.
    assumption.
@@ -270,13 +270,13 @@ Proof.
    split with z.
    rewrite H2 in H5.
    rewrite H9 in H5.
-   rewrite (mult_assoc a qi) in H5.
-   rewrite (mult_comm a) in H5.
-   rewrite (mult_assoc_reverse qi a) in H5.
+   rewrite (Nat.mul_assoc a qi) in H5.
+   rewrite (Nat.mul_comm a) in H5.
+   rewrite <- (Nat.mul_assoc qi a) in H5.
    apply simpl_eq_mult_l with qi.
    elim H6.
    intros.
-   apply lt_trans with 1. apply lt_O_Sn.
+   apply Nat.lt_trans with 1. apply Nat.lt_0_succ.
    assumption.
    assumption.
    split with (product restqs). rewrite <- H5. assumption.

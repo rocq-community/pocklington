@@ -1,16 +1,16 @@
 ---
 fullname: Pocklington
 shortname: pocklington
-organization: coq-community
+organization: rocq-community
 community: true
 action: true
-nix: true
 coqdoc: false
+dune: true
 
-synopsis: Pocklington's criterion for primality in Coq
+synopsis: Pocklington's criterion for primality in Rocq
 
 description: |-
-  Coq formalization of Pocklington's criterion for checking primality of
+  Rocq formalization of Pocklington's criterion for checking primality of
   large natural numbers. Includes a formal proof of Fermat's little theorem.
 
 publications:
@@ -37,24 +37,15 @@ license:
   identifier: LGPL-2.1-or-later
 
 supported_coq_versions:
-  text: 8.7 or later
-  opam: '{(>= "8.7" & < "8.17~") | (= "dev")}'
+  text: 9.0 or later
+  opam: '{>= "9.0"}'
 
-tested_coq_opam_versions:
+tested_rocq_opam_versions:
 - version: dev
-- version: '8.16'
-- version: '8.15'
-- version: '8.14'
-- version: '8.13'
-- version: '8.12'
-- version: '8.11'
-- version: '8.10'
-- version: '8.9'
-- version: '8.8'
-- version: '8.7'
-
-tested_coq_nix_versions:
-- coq_version: master
+- version: '9.3'
+- version: '9.2'
+- version: '9.1'
+- version: '9.0'
 
 namespace: Pocklington
 

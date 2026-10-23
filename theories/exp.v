@@ -22,7 +22,7 @@
    @version $Revision$
 *)
 
-Require Import ZArith.
+From Stdlib Require Import ZArith.
 
 Require Import lemmas.
 Require Import natZ.
@@ -161,7 +161,7 @@ Proof.
    rewrite expzexp.
    rewrite expzexp.
    rewrite abs_plus_pos.
-   rewrite plus_comm.
+   rewrite Nat.add_comm.
    change (Exp a (S (Z.abs_nat n)) = (a * Exp a (Z.abs_nat n))%Z) in |- *.
    apply exp_S.
    assumption.

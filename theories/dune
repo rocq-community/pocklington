@@ -1,4 +1,5 @@
-(coq.theory
+(rocq.theory
  (name Pocklington)
  (package coq-pocklington)
- (synopsis "Pocklington's criterion for primality in Coq"))
+ (theories Stdlib)
+ (synopsis "Pocklington's criterion for primality in Rocq"))

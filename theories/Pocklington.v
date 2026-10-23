@@ -20,8 +20,8 @@
    @version $Revision$
 *)
 
-Require Export Arith.
-Require Export ZArith.
+From Stdlib Require Export Arith.
+From Stdlib Require Export ZArith.
 
 Require Export lemmas.
 Require Export dec.
